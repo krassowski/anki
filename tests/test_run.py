@@ -9,8 +9,16 @@ import aqt
 from aqt import _run
 from aqt.profiles import ProfileManager
 
+
 @contextmanager
-def temporaryUser(dirName, name="__Temporary Test User__"):
+def temporaryUser(dirName, name="__Temporary Test User__", lang="en_US"):
+
+    # prevent popping up language selection dialog
+    original = ProfileManager._setDefaultLang
+    def setDefaultLang(profileManager):
+        profileManager.setLang(lang)
+
+    ProfileManager._setDefaultLang = setDefaultLang
 
     pm = ProfileManager(base=dirName)
 
@@ -23,6 +31,7 @@ def temporaryUser(dirName, name="__Temporary Test User__"):
     yield name
 
     pm.remove(name)
+    ProfileManager._setDefaultLang = original
 
 @contextmanager
 def temporaryDir(name):
@@ -33,7 +42,7 @@ def temporaryDir(name):
 def test_run():
 
     # we need a new user for the test
-    with temporaryDir("temp_anki_base") as dirName:
+    with temporaryDir("anki_temp_base") as dirName:
         with temporaryUser(dirName) as userName:
             app = _run(argv=["anki", "-p", userName, "-b", dirName], exec=False)
             assert app
