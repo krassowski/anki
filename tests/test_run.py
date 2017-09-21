@@ -1,15 +1,18 @@
 # coding: utf-8
+import shutil
+import tempfile
 from contextlib import contextmanager
+
+import os
 
 import aqt
 from aqt import _run
 from aqt.profiles import ProfileManager
 
-
 @contextmanager
-def temporaryUser(name="__Temporary Test User__"):
+def temporaryUser(dirName, name="__Temporary Test User__"):
 
-    pm = ProfileManager(base="")
+    pm = ProfileManager(base=dirName)
 
     if name in pm.profiles():
         raise Exception(f"Could not create a temporary user with name {name}")
@@ -21,12 +24,19 @@ def temporaryUser(name="__Temporary Test User__"):
 
     pm.remove(name)
 
+@contextmanager
+def temporaryDir(name):
+    path = os.path.join(tempfile.gettempdir(), name)
+    yield path
+    shutil.rmtree(path)
+
 def test_run():
 
     # we need a new user for the test
-    with temporaryUser() as name:
-        app = _run(argv=["anki", "-p", name], exec=False)
-        assert app
+    with temporaryDir("temp_anki_base") as dirName:
+        with temporaryUser(dirName) as userName:
+            app = _run(argv=["anki", "-p", userName, "-b", dirName], exec=False)
+            assert app
 
     aqt.mw.cleanupAndExit()
 
