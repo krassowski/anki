@@ -13,6 +13,6 @@ install:
   - pip install nose
   - pip install coveralls
   - sudo apt-get install xvfb
-  - Xvfb :1 &
+  - Xvfb :99 &
 
-script: DISPLAY=:1 nosetests -vv -l nose ./tests --with-coverage --cover-package=./anki
+script: DISPLAY=:99 nosetests -vv -l nose ./tests --with-coverage --cover-package=./anki
