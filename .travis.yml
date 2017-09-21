@@ -9,5 +9,7 @@ install:
   - bash tools/build_ui.sh
   - pip install nose
   - pip install coveralls
+  - sudo apt-get install xvfb
+  - Xvfb :1 &
 
-script: nosetests ./tests --with-coverage --cover-package=./anki
+script: DISPLAY=:1 nosetests ./tests --with-coverage --cover-package=./anki
