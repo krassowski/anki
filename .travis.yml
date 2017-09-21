@@ -12,4 +12,4 @@ install:
   - sudo apt-get install xvfb
   - Xvfb :1 &
 
-script: DISPLAY=:1 nosetests ./tests --with-coverage --cover-package=./anki
+script: DISPLAY=:1 nosetests -vv -l nose ./tests --with-coverage --cover-package=./anki
